@@ -9,17 +9,22 @@
         <title>Sage Laser Tag</title>
     </head>
     <body>
-        <div class="app">
-            <h1>PhoneGap</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
+        <div id="create_or_join_room_div" class="full_page">
+            <button onclick="create_room_setup()">CREATE ROOM</button> | <button onclick="join_existing_room_setup()">JOIN EXISTING ROOM</button>
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
+        <div id="create_room_div" style="display:none;" class="full_page">
+            <button onclick="create_room()">CREATE ROOM</button> | <button onclick="join_existing_room()">JOIN EXISTING ROOM</button>
+        </div>
+        <div id="join_room_div" style="display:none;" class="full_page">
+            <input type="text" id="join_room_room_code"><br>
+            <button onclick="join_existing_room_submit()">Join</button>
+        </div>
+        <!--script type="text/javascript" src="cordova.js"></script-->
+        <script type="text/javascript" src="js/jquery-1.11.3.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
-            app.initialize();
+            //app.initialize();
+            
         </script>
     </body>
 </html>
