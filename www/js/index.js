@@ -8,7 +8,22 @@ function create_room_setup() {
 }
 
 function create_room_submit() {
+    jQuery.ajax({
+        url: "https://sage-lasertag-api.herokuapp.com/add_player_to_room",
+        dataType: "json",
+        type: "POST",
+        data: {
+            player_id: localStorage.getItem("player_id"),
+            room_code: jQuery("#join_room_room_code").val(),
+        },
+        error: function (e) {
+            console.log("error", e);
+            alert("Error while trying to join existing room");
+        },
+        success:function (data) {
 
+        }
+    });
 }
 
 function join_existing_room_setup() {

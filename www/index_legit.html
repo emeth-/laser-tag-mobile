@@ -7,21 +7,27 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Sage Laser Tag</title>
+        <script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <div id="create_or_join_room_div" class="full_page">
             <button onclick="create_room_setup()">CREATE ROOM</button> | <button onclick="join_existing_room_setup()">JOIN EXISTING ROOM</button>
         </div>
         <div id="create_room_div" style="display:none;" class="full_page">
-            <button onclick="create_room()">CREATE ROOM</button> | <button onclick="join_existing_room()">JOIN EXISTING ROOM</button>
+            Room Code: <input type="text" id="join_room_room_code"><br><br>
+            <select>
+                <option value="deathmatch">Deathmatch</option>
+            </select><br><br>
+            <input type="checkbox" id="lock_down" value="true"> Lock down<br><br>
+
+            <button onclick="join_existing_room_submit()">Create</button>
         </div>
         <div id="join_room_div" style="display:none;" class="full_page">
-            <input type="text" id="join_room_room_code"><br>
+            Room Code: <input type="text" id="join_room_room_code"><br><br>
             <button onclick="join_existing_room_submit()">Join</button>
         </div>
         <!--script type="text/javascript" src="cordova.js"></script-->
-        <script type="text/javascript" src="js/jquery-1.11.3.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
             //app.initialize();
             
