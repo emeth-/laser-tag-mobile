@@ -88,13 +88,16 @@
                     <h3 class="panel-title">Configure Match</h3>
                   </div>
                   <div class="panel-body">
-                    <select class="form-control" id="match_config_gametype">
-                        <option value="deathmatch">Deathmatch</option>
-                        <option value="team_deathmatch">Team Deathmatch</option>
-                    </select><br>
+                    <div class="form-group">
+                        <label for="match_config_gametype" class="control-label">Gametype</label>
+                        <select class="form-control" id="match_config_gametype">
+                            <option value="deathmatch">Deathmatch</option>
+                            <option value="team_deathmatch">Team Deathmatch</option>
+                        </select>
+                    </div>
 
                     <div class="form-group">
-                        <label for="inputPassword" class="control-label">Player Lives</label>
+                        <label for="match_config_lives_per_player" class="control-label">Player Lives</label>
                         <input type="text" id="match_config_lives_per_player" class="form-control" placeholder="1">
                     </div>
 
@@ -105,7 +108,7 @@
                                 <span style="font-weight: bold">Respawns</span>
                             </label>
                         </div>
-                        <label for="inputPassword" class="control-label respawn_timer_enabled" style="display:none;">Respawn Timer (in seconds)</label>
+                        <label for="match_config_respawn_timer" class="control-label respawn_timer_enabled" style="display:none;">Respawn Timer (in seconds)</label>
                         <input type="text" id="match_config_respawn_timer" class="form-control respawn_timer_enabled" placeholder="5" style="display:none;">
                     </div>
 
