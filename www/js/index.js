@@ -2,11 +2,33 @@ if (!localStorage.getItem("player_id")){
     localStorage.setItem("player_id", makeid());
 }
 
+function start_match() {
+    jQuery.ajax({
+        url: "https://sage-lasertag-api.herokuapp.com/start_match",
+        dataType: "json",
+        type: "POST",
+        data: {
+            player_id: localStorage.getItem("player_id"),
+            room_code: localStorage.getItem("room_code"),
+            gametype: jQuery("#match_config_gametype").val(),
+            locked_down: jQuery("#match_config_locked_down").val(),
+        },
+        error: function (e) {
+            console.log("error", e);
+            alert("Error while trying to start match!");
+        },
+        success:function (data) {
+
+        }
+    });
+}
+
 function create_room_submit() {
     if (!jQuery("#create_room_room_code").val()) {
         alert("Must enter room code!");
     }
     else {
+        $(".full_page").hide();
         jQuery.ajax({
             url: "https://sage-lasertag-api.herokuapp.com/create_room",
             dataType: "json",
@@ -19,20 +41,24 @@ function create_room_submit() {
             },
             error: function (e) {
                 console.log("error", e);
-                alert("Error while trying to join existing room");
+                alert("Error while trying to create room");
+                $("#create_or_join_room_div").show();
             },
             success:function (data) {
-
+                //TODO set this from the return data instead
+                localStorage.setItem("room_code", jQuery("#create_room_room_code").val());
+                $("#waiting_for_match_to_start").show();
             }
         });
     }
 }
 
 function join_existing_room_submit() {
-    if (!jQuery("#create_room_room_code").val()) {
+    if (!jQuery("#join_room_room_code").val()) {
         alert("Must enter room code!");
     }
     else {
+        $(".full_page").hide();
         jQuery.ajax({
             url: "https://sage-lasertag-api.herokuapp.com/add_player_to_room",
             dataType: "json",
@@ -44,9 +70,12 @@ function join_existing_room_submit() {
             error: function (e) {
                 console.log("error", e);
                 alert("Error while trying to join existing room");
+                $("#create_or_join_room_div").show();
             },
             success:function (data) {
-
+                //TODO set this from the return data instead
+                localStorage.setItem("room_code", jQuery("#join_room_room_code").val());
+                $("#waiting_for_match_to_start").show();
             }
         });
     }

@@ -49,10 +49,9 @@
           </div>
         </nav>
 
-
-
         <div class="container theme-showcase" role="main">
             <br><br><br><br>
+            
             <div id="create_or_join_room_div" class="full_page">
 
                 <div class="panel panel-default">
@@ -71,21 +70,49 @@
                     <h3 class="panel-title">Create Room</h3>
                   </div>
                   <div class="panel-body">
-                <input type="text" id="create_room_room_code" class="form-control" placeholder="Room Code"><br>
-                <select class="form-control" id="create_room_gametype">
-                    <option value="deathmatch">Deathmatch</option>
-                    <option value="team_deathmatch">Team Deathmatch</option>
-                </select><br>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" id="create_room_locked_down" class="form-control" data-toggle="toggle" data-size="small">
-                        Locked down
-                    </label>
-                </div>
+                    <input type="text" id="create_room_room_code" class="form-control" placeholder="Room Code"><br>
 
-                <button onclick="join_existing_room_submit()" type="button" class="btn btn-lg btn-success">Create</button>
+                    <button onclick="create_room_submit()" type="button" class="btn btn-lg btn-success">Create</button>
                   </div>
                 </div>
+
+
+            </div><!-- end create_or_join_room_div -->
+
+            <div id="waiting_for_match_to_start" class="full_page" style="display:none;">
+
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Configure Match</h3>
+                  </div>
+                  <div class="panel-body">
+                    <select class="form-control" id="match_config_gametype">
+                        <option value="deathmatch">Deathmatch</option>
+                        <option value="team_deathmatch">Team Deathmatch</option>
+                    </select><br>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="match_config_locked_down" class="form-control" data-toggle="toggle" data-size="small">
+                            Locked down
+                        </label>
+                    </div>
+                    Total Players: 13<br><br>
+                    <button onclick="join_existing_room_submit()" type="button" class="btn btn-lg btn-success">Start Match!</button>
+                  </div>
+                </div>
+
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Waiting for Match to Start</h3>
+                    </div>
+                    <div class="panel-body">
+                        Total Players: 13
+                        #TODO Allow team selection here.
+                    </div>
+                </div>
+            </div><!-- end waiting_for_match_to_start -->
+
         </div>
 
 
