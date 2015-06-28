@@ -56,18 +56,20 @@
 
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <h3 class="panel-title">Join Room</h3>
+                    <h3 class="panel-title">Join Existing Room</h3>
                   </div>
                   <div class="panel-body">
                     <input type="text" id="join_room_room_code" class="form-control" placeholder="Room Code"><br>
                     <button onclick="join_existing_room_submit()" type="button" class="btn btn-lg btn-success">Join</button>
+                    <hr>
+                    Alternatively, you can shoot someone currently in a room to join their room.
                   </div>
                 </div>
 
 
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <h3 class="panel-title">Create Room</h3>
+                    <h3 class="panel-title">Create A New Room</h3>
                   </div>
                   <div class="panel-body">
                     <input type="text" id="create_room_room_code" class="form-control" placeholder="Room Code"><br>
@@ -99,16 +101,16 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="match_config_respawn_enabled" class="form-control" data-toggle="toggle" data-size="small" onchange="$(this).prop('checked') ? $('.respawn_timer_enabled').show() : $('.respawn_timer_enabled').hide() ">
-                                Respawns Enabled
+                                <input type="checkbox" id="match_config_respawn_enabled" class="form-control" data-width="100px" data-on="Enabled" data-off="Disabled" data-toggle="toggle" data-size="small" onchange="$(this).prop('checked') ? $('.respawn_timer_enabled').show() : $('.respawn_timer_enabled').hide() ">
+                                <span style="font-weight: bold">Respawns</span>
                             </label>
                         </div>
                         <label for="inputPassword" class="control-label respawn_timer_enabled" style="display:none;">Respawn Timer (in seconds)</label>
                         <input type="text" id="match_config_respawn_timer" class="form-control respawn_timer_enabled" placeholder="5" style="display:none;">
                     </div>
 
-                    Total Players In Room: <span class="waiting_for_match_num_players">1</span><br><br>
-                    <button onclick="join_existing_room_submit()" type="button" class="btn btn-lg btn-success">Start Match!</button>
+                    <span style="font-weight: bold">Total Players In Room:</span> <span class="waiting_for_match_num_players">1</span><br><br>
+                    <button onclick="start_match()" type="button" class="btn btn-lg btn-success">Start Match!</button>
                   </div>
                 </div>
 
