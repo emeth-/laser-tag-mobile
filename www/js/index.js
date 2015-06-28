@@ -1,5 +1,33 @@
 if (!localStorage.getItem("player_id")){
+    // TODO actually transfer this to server-side
     localStorage.setItem("player_id", makeid());
+}
+
+function poll_match() {
+    jQuery.ajax({
+        url: "http://127.0.0.1:8001/get_match_details",
+        dataType: "json",
+        type: "POST",
+        data: {
+            player_id: localStorage.getItem("player_id"),
+            room_code: jQuery("#create_room_room_code").val(),
+            gametype: jQuery("#create_room_gametype").val(),
+            locked_down: jQuery("#create_room_locked_down").val(),
+        },
+        error: function (e) {
+            if (e.responseJSON && e.responseJSON.message) {
+                alert(e.responseJSON.message);
+            }
+            else {
+                console.log("error trying to poll match", e);
+                //alert("Error while trying to poll match");
+            }
+        },
+        success:function (data) {
+            $(".waiting_for_match_num_players").text(data.data.number_of_players);
+            setTimeout("poll_match()", 3000);
+        }
+    });
 }
 
 function start_match() {
@@ -69,6 +97,7 @@ function create_room_submit() {
                     $("#waiting_for_match_to_start_nonadmin").show();
                     $("#waiting_for_match_to_start_admin").hide();
                 }
+                poll_match();
             }
         });
     }
@@ -110,6 +139,7 @@ function join_existing_room_submit() {
                     $("#waiting_for_match_to_start_nonadmin").show();
                     $("#waiting_for_match_to_start_admin").hide();
                 }
+                poll_match();
             }
         });
     }
