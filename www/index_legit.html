@@ -79,9 +79,9 @@
 
             </div><!-- end create_or_join_room_div -->
 
-            <div id="waiting_for_match_to_start" class="full_page" style="display:none;">
+            <div id="waiting_for_match_to_start" class="full_page" style="display:noqne;">
 
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="waiting_for_match_to_start_admin">
                   <div class="panel-heading">
                     <h3 class="panel-title">Configure Match</h3>
                   </div>
@@ -90,25 +90,36 @@
                         <option value="deathmatch">Deathmatch</option>
                         <option value="team_deathmatch">Team Deathmatch</option>
                     </select><br>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="match_config_locked_down" class="form-control" data-toggle="toggle" data-size="small">
-                            Locked down
-                        </label>
+
+                    <div class="form-group">
+                        <label for="inputPassword" class="control-label">Player Lives</label>
+                        <input type="text" id="match_config_lives_per_player" class="form-control" placeholder="1">
                     </div>
-                    Total Players: 13<br><br>
+
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="match_config_respawn_enabled" class="form-control" data-toggle="toggle" data-size="small" onchange="$(this).prop('checked') ? $('.respawn_timer_enabled').show() : $('.respawn_timer_enabled').hide() ">
+                                Respawns Enabled
+                            </label>
+                        </div>
+                        <label for="inputPassword" class="control-label respawn_timer_enabled" style="display:none;">Respawn Timer (in seconds)</label>
+                        <input type="text" id="match_config_respawn_timer" class="form-control respawn_timer_enabled" placeholder="5" style="display:none;">
+                    </div>
+
+                    Total Players Waiting: <span id="waiting_for_match_num_players">1</span><br><br>
                     <button onclick="join_existing_room_submit()" type="button" class="btn btn-lg btn-success">Start Match!</button>
                   </div>
                 </div>
 
 
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="waiting_for_match_to_start_nonadmin">
                     <div class="panel-heading">
                         <h3 class="panel-title">Waiting for Match to Start</h3>
                     </div>
                     <div class="panel-body">
-                        Total Players: 13
-                        #TODO Allow team selection here.
+                        Total Players Waiting: <span id="waiting_for_match_num_players">1</span><br><br>
+                        <!--#TODO Allow team selection here.-->
                     </div>
                 </div>
             </div><!-- end waiting_for_match_to_start -->

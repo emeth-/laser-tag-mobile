@@ -3,16 +3,24 @@ if (!localStorage.getItem("player_id")){
 }
 
 function start_match() {
+    var post_data = {
+        player_id: localStorage.getItem("player_id"),
+        room_code: localStorage.getItem("room_code"),
+        gametype: jQuery("#match_config_gametype").val(),
+        lives_per_player: jQuery("#match_config_lives_per_player").val(),
+        respawn_timer: -1,
+    };
+    if ($('#match_config_respawn_enabled').prop('checked')) {
+        post_data['respawn_timer'] = jQuery("#match_config_respawn_timer").val();
+    }
+    if (!parseInt(post_data['lives_per_player'])) {
+        post_data['lives_per_player'] = 1;
+    }
     jQuery.ajax({
-        url: "https://sage-lasertag-api.herokuapp.com/start_match",
+        url: "http://127.0.0.1:8001/start_match",
         dataType: "json",
         type: "POST",
-        data: {
-            player_id: localStorage.getItem("player_id"),
-            room_code: localStorage.getItem("room_code"),
-            gametype: jQuery("#match_config_gametype").val(),
-            locked_down: jQuery("#match_config_locked_down").val(),
-        },
+        data: post_data,
         error: function (e) {
             console.log("error", e);
             alert("Error while trying to start match!");
@@ -30,7 +38,7 @@ function create_room_submit() {
     else {
         $(".full_page").hide();
         jQuery.ajax({
-            url: "https://sage-lasertag-api.herokuapp.com/create_room",
+            url: "http://127.0.0.1:8001/create_room",
             dataType: "json",
             type: "POST",
             data: {
@@ -40,14 +48,27 @@ function create_room_submit() {
                 locked_down: jQuery("#create_room_locked_down").val(),
             },
             error: function (e) {
-                console.log("error", e);
-                alert("Error while trying to create room");
+                if (e.responseJSON && e.responseJSON.message) {
+                    alert(e.responseJSON.message);
+                }
+                else {
+                    console.log("error", e);
+                    alert("Error while trying to create room");
+                }
                 $("#create_or_join_room_div").show();
             },
             success:function (data) {
                 //TODO set this from the return data instead
-                localStorage.setItem("room_code", jQuery("#create_room_room_code").val());
+                localStorage.setItem("room_code", data.data.room_code);
                 $("#waiting_for_match_to_start").show();
+                if (data.data.creator_player_id == localStorage.getItem("player_id")) {
+                    $("#waiting_for_match_to_start_nonadmin").hide();
+                    $("#waiting_for_match_to_start_admin").show();
+                }
+                else {
+                    $("#waiting_for_match_to_start_nonadmin").show();
+                    $("#waiting_for_match_to_start_admin").hide();
+                }
             }
         });
     }
@@ -60,7 +81,7 @@ function join_existing_room_submit() {
     else {
         $(".full_page").hide();
         jQuery.ajax({
-            url: "https://sage-lasertag-api.herokuapp.com/add_player_to_room",
+            url: "http://127.0.0.1:8001/add_player_to_room", // https://sage-lasertag-api.herokuapp.com
             dataType: "json",
             type: "POST",
             data: {
@@ -68,14 +89,27 @@ function join_existing_room_submit() {
                 room_code: jQuery("#join_room_room_code").val(),
             },
             error: function (e) {
-                console.log("error", e);
-                alert("Error while trying to join existing room");
+                if (e.responseJSON && e.responseJSON.message) {
+                    alert(e.responseJSON.message);
+                }
+                else {
+                    console.log("error", e);
+                    alert("Error while trying to join existing room");
+                }
                 $("#create_or_join_room_div").show();
             },
             success:function (data) {
                 //TODO set this from the return data instead
-                localStorage.setItem("room_code", jQuery("#join_room_room_code").val());
+                localStorage.setItem("room_code", data.data.room_code);
                 $("#waiting_for_match_to_start").show();
+                if (data.data.creator_player_id == localStorage.getItem("player_id")) {
+                    $("#waiting_for_match_to_start_nonadmin").hide();
+                    $("#waiting_for_match_to_start_admin").show();
+                }
+                else {
+                    $("#waiting_for_match_to_start_nonadmin").show();
+                    $("#waiting_for_match_to_start_admin").hide();
+                }
             }
         });
     }
