@@ -25,6 +25,14 @@ function poll_match() {
         },
         success:function (data) {
             $(".waiting_for_match_num_players").text(data.data.number_of_players);
+            if (data.data.match_in_progress) {
+                $("#match_in_progress_gametype").text(data.data.gametype);
+                var scores_htmlz = "";
+                for (var i=0; i<data.data.players.length; i++) {
+                    scores_htmlz += '<tr><th scope="row">'+(i+1)+'</th><td>'+data.data.players[i]['alias']+'</td><td>'+data.data.players[i]['score']+'</td></tr>';
+                }
+                $("#match_in_progress_scores").html(scores_htmlz);
+            }
             setTimeout("poll_match()", 3000);
         }
     });
