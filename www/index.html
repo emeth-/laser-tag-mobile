@@ -9,6 +9,18 @@
         <link href="css/bootstrap.css" rel="stylesheet">
         <link href="css/bootstrap-theme.css" rel="stylesheet">
         <link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+        <style>
+        footer.navbar-default.navbar-fixed-bottom
+        {
+            background: #d3d3d3;
+            color:white;
+            padding:1em 0;
+        }
+        footer.navbar-default.navbar-fixed-bottom p
+        {
+            margin:0;
+        }
+        </style>
         <title>Sage Laser Tag</title>
         <script type="text/javascript" src="js/jquery-1.11.3.js"></script>
         <script src="js/bootstrap.js"></script>
@@ -97,8 +109,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="match_config_lives_per_player" class="control-label">Player Lives</label>
-                        <input type="text" id="match_config_lives_per_player" class="form-control" placeholder="1">
+                        <label for="match_config_length" class="control-label">Match Length (minutes)</label>
+                        <input type="text" id="match_config_length" class="form-control" placeholder="15">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match_config_countdown" class="control-label">Match Countdown (seconds)</label>
+                        <input type="text" id="match_config_countdown" class="form-control" placeholder="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="match_config_lives_per_spawn" class="control-label">Player Lives</label>
+                        <input type="text" id="match_config_lives_per_spawn" class="form-control" placeholder="1">
                     </div>
 
                     <div class="form-group">
@@ -130,11 +152,32 @@
             </div><!-- end waiting_for_match_to_start -->
 
 
+            <div id="match_about_to_start" class="full_page" style="display:none;">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading match_in_progress_gametype" style="text-transform: uppercase;"></div>
+                    <div class="panel-body">
+                        <p>Game Starts In:</p>
+                        <h1 id="match_begins_timer">10</h1>
+                    </div>
+
+                    <ul class="list-group">
+                        <li class="list-group-item">Lives per Spawn: <span class="match_rules_lives_per_spawn"></span></li>
+                        <li class="list-group-item">Respawn Timer: <span class="match_rules_respawn_timer"></span></li>
+                        <li class="list-group-item">Match Length: <span class="match_rules_length"></span></li>
+                    </ul>
+                </div>
+
+            </div><!-- end match_about_to_start -->
+
             <div id="match_in_progress" class="full_page" style="display:none;">
 
                 <div class="panel panel-default">
-                    <!-- Default panel contents -->
-                    <div class="panel-heading" style="text-transform: uppercase;" id="match_in_progress_gametype"></div>
+                    
+                    <div class="panel-heading">
+                        <span style="text-transform: uppercase;" class="match_in_progress_gametype"></span>
+                        <span style="text-transform: uppercase;float: right;" class="match_time_left"></span>
+                    </div>
 
                     <table class="table">
                     <thead>
@@ -149,6 +192,13 @@
                   </table>
 
                 </div>
+
+
+                <footer class="navbar-default navbar-fixed-bottom">
+                      <div class="container">
+                        <p>Hello world!</p>
+                      </div>
+                </footer>
 
             </div><!-- end match_in_progress -->
 
