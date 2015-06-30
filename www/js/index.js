@@ -4,6 +4,42 @@ if (!localStorage.getItem("player_id")){
 }
 var poll_match_settimeout;
 
+function end_match() {
+
+}
+
+function leave_room() {
+    localStorage.removeItem("room_id");
+
+    $(".leave_room_action").addClass('hide-me');
+    $(".receive_fake_hit_action").addClass('hide-me');
+    $(".send_fake_shot_action").addClass('hide-me');
+    $(".end_match_action").addClass('hide-me');
+    cleanup_navbar();
+
+    $(".full_page").addClass('hide-me');
+    $("#create_or_join_room_div").removeClass('hide-me');
+}
+
+function receive_fake_hit() {
+
+}
+
+function send_fake_shot() {
+
+}
+
+function cleanup_navbar() {
+    if ($("#navbar").find('ul').children().not('.hide-me').length > 0) {
+        $('#navbar').removeClass('hide-me');
+        $('#mainnavbar_button').removeClass('hide-me');
+    }
+    else {
+        $('#navbar').addClass('hide-me');
+        $('#mainnavbar_button').addClass('hide-me');
+    }
+}
+
 function poll_match() {
     clearTimeout(poll_match_settimeout);
     jQuery.ajax({
@@ -27,6 +63,19 @@ function poll_match() {
             $(".waiting_for_match_num_players").text(data.data.number_of_players);
             var poll_match_delay = 3000;
             if (data.data.match_in_progress) {
+
+                //Navbar updates
+                if (data.data.creator_player_id == localStorage.getItem("player_id")) {
+                    $(".end_match_action").removeClass('hide-me');
+                }
+                else {
+                    $(".end_match_action").addClass('hide-me');
+                }
+                $(".receive_fake_hit_action").removeClass('hide-me');
+                $(".send_fake_shot_action").removeClass('hide-me');
+                cleanup_navbar();
+                //End navbar updates
+
                 $(".match_in_progress_gametype").text(data.data.gametype);
                 $(".match_rules_lives_per_spawn").text(data.data.lives_per_spawn);
                 $(".match_rules_length").text(data.data.match_length + " minutes");
@@ -62,21 +111,32 @@ function poll_match() {
                 }
 
                 if (countdown_seconds_left > 0) {
-                    if ($('#match_about_to_start').css('display') == 'none') {
-                        $(".full_page").hide();
-                        $("#match_about_to_start").show();
+                    if ($('#match_about_to_start').hasClass('hide-me')) {
+                        $(".full_page").addClass('hide-me');
+                        $("#match_about_to_start").removeClass('hide-me');
                     }
-                    poll_match_delay = 300;
+                    poll_match_delay = 800;
                 }
                 else {
-                    if ($('#match_in_progress').css('display') == 'none') {
-                        $(".full_page").hide();
-                        $("#match_in_progress").show();
+                    if ($('#match_in_progress').hasClass('hide-me')) {
+                        $(".full_page").addClass('hide-me');
+                        $("#match_in_progress").removeClass('hide-me');
                     }
                 }
             }
-            clearTimeout(poll_match_settimeout);
-            poll_match_settimeout = setTimeout("poll_match()", poll_match_delay);
+            else {
+                //Navbar updates
+                $(".end_match_action").addClass('hide-me');
+                $(".receive_fake_hit_action").addClass('hide-me');
+                $(".send_fake_shot_action").addClass('hide-me');
+                cleanup_navbar();
+                //End navbar updates
+            }
+
+            if (localStorage.getItem("room_id")) {
+                clearTimeout(poll_match_settimeout);
+                poll_match_settimeout = setTimeout("poll_match()", poll_match_delay);
+            }
         }
     });
 }
@@ -123,7 +183,7 @@ function create_room_submit() {
         alert("Must enter room code!");
     }
     else {
-        $(".full_page").hide();
+        $(".full_page").addClass('hide-me');
         jQuery.ajax({
             url: "http://127.0.0.1:8001/create_room",
             dataType: "json",
@@ -142,18 +202,20 @@ function create_room_submit() {
                     console.log("error", e);
                     alert("Error while trying to create room");
                 }
-                $("#create_or_join_room_div").show();
+                $("#create_or_join_room_div").removeClass('hide-me');
             },
             success:function (data) {
+                $(".leave_room_action").removeClass('hide-me');
+                cleanup_navbar();
                 localStorage.setItem("room_code", data.data.room_code);
-                $("#waiting_for_match_to_start").show();
+                $("#waiting_for_match_to_start").removeClass('hide-me');
                 if (data.data.creator_player_id == localStorage.getItem("player_id")) {
-                    $("#waiting_for_match_to_start_nonadmin").hide();
-                    $("#waiting_for_match_to_start_admin").show();
+                    $("#waiting_for_match_to_start_nonadmin").addClass('hide-me');
+                    $("#waiting_for_match_to_start_admin").removeClass('hide-me');
                 }
                 else {
-                    $("#waiting_for_match_to_start_nonadmin").show();
-                    $("#waiting_for_match_to_start_admin").hide();
+                    $("#waiting_for_match_to_start_nonadmin").removeClass('hide-me');
+                    $("#waiting_for_match_to_start_admin").addClass('hide-me');
                 }
                 poll_match();
             }
@@ -166,7 +228,7 @@ function join_existing_room_submit() {
         alert("Must enter room code!");
     }
     else {
-        $(".full_page").hide();
+        $(".full_page").addClass('hide-me');
         jQuery.ajax({
             url: "http://127.0.0.1:8001/add_player_to_room", // https://sage-lasertag-api.herokuapp.com
             dataType: "json",
@@ -183,18 +245,20 @@ function join_existing_room_submit() {
                     console.log("error", e);
                     alert("Error while trying to join existing room");
                 }
-                $("#create_or_join_room_div").show();
+                $("#create_or_join_room_div").removeClass('hide-me');
             },
             success:function (data) {
+                $(".leave_room_action").removeClass('hide-me');
+                cleanup_navbar();
                 localStorage.setItem("room_code", data.data.room_code);
-                $("#waiting_for_match_to_start").show();
+                $("#waiting_for_match_to_start").removeClass('hide-me');
                 if (data.data.creator_player_id == localStorage.getItem("player_id")) {
-                    $("#waiting_for_match_to_start_nonadmin").hide();
-                    $("#waiting_for_match_to_start_admin").show();
+                    $("#waiting_for_match_to_start_nonadmin").addClass('hide-me');
+                    $("#waiting_for_match_to_start_admin").removeClass('hide-me');
                 }
                 else {
-                    $("#waiting_for_match_to_start_nonadmin").show();
-                    $("#waiting_for_match_to_start_admin").hide();
+                    $("#waiting_for_match_to_start_nonadmin").removeClass('hide-me');
+                    $("#waiting_for_match_to_start_admin").addClass('hide-me');
                 }
                 poll_match();
             }
