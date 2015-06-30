@@ -4,10 +4,6 @@ if (!localStorage.getItem("player_id")){
 }
 var poll_match_settimeout;
 
-function end_match() {
-
-}
-
 function leave_room() {
     localStorage.removeItem("room_id");
 
@@ -19,6 +15,10 @@ function leave_room() {
 
     $(".full_page").addClass('hide-me');
     $("#create_or_join_room_div").removeClass('hide-me');
+}
+
+function end_match() {
+
 }
 
 function receive_fake_hit() {
@@ -109,7 +109,6 @@ function poll_match() {
                 else {
                     $(".match_time_left").text("Game Over!");
                 }
-
                 if (countdown_seconds_left > 0) {
                     if ($('#match_about_to_start').hasClass('hide-me')) {
                         $(".full_page").addClass('hide-me');
@@ -133,7 +132,7 @@ function poll_match() {
                 //End navbar updates
             }
 
-            if (localStorage.getItem("room_id")) {
+            if (localStorage.getItem("room_code")) {
                 clearTimeout(poll_match_settimeout);
                 poll_match_settimeout = setTimeout("poll_match()", poll_match_delay);
             }
