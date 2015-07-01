@@ -5,6 +5,8 @@ if (!localStorage.getItem("player_id")){
 var poll_match_settimeout;
 
 function leave_room() {
+    clearTimeout(poll_match_settimeout);
+    $("#mainnavbar_button").click();
     localStorage.removeItem("room_id");
 
     $(".leave_room_action").addClass('hide-me');
@@ -42,102 +44,104 @@ function cleanup_navbar() {
 
 function poll_match() {
     clearTimeout(poll_match_settimeout);
-    jQuery.ajax({
-        url: "http://127.0.0.1:8001/get_match_details",
-        dataType: "json",
-        type: "POST",
-        data: {
-            player_id: localStorage.getItem("player_id"),
-            room_code: localStorage.getItem("room_code")
-        },
-        error: function (e) {
-            if (e.responseJSON && e.responseJSON.message) {
-                alert(e.responseJSON.message);
-            }
-            else {
-                console.log("error trying to poll match", e);
-                //alert("Error while trying to poll match");
-            }
-        },
-        success:function (data) {
-            $(".waiting_for_match_num_players").text(data.data.number_of_players);
-            var poll_match_delay = 3000;
-            if (data.data.match_in_progress) {
-
-                //Navbar updates
-                if (data.data.creator_player_id == localStorage.getItem("player_id")) {
-                    $(".end_match_action").removeClass('hide-me');
+    if (localStorage.getItem("room_code")) {
+        jQuery.ajax({
+            url: "http://127.0.0.1:8001/get_match_details",
+            dataType: "json",
+            type: "POST",
+            data: {
+                player_id: localStorage.getItem("player_id"),
+                room_code: localStorage.getItem("room_code")
+            },
+            error: function (e) {
+                if (e.responseJSON && e.responseJSON.message) {
+                    alert(e.responseJSON.message);
                 }
                 else {
-                    $(".end_match_action").addClass('hide-me');
+                    console.log("error trying to poll match", e);
+                    //alert("Error while trying to poll match");
                 }
-                $(".receive_fake_hit_action").removeClass('hide-me');
-                $(".send_fake_shot_action").removeClass('hide-me');
-                cleanup_navbar();
-                //End navbar updates
+            },
+            success:function (data) {
+                $(".waiting_for_match_num_players").text(data.data.number_of_players);
+                var poll_match_delay = 3000;
+                if (data.data.match_in_progress) {
 
-                $(".match_in_progress_gametype").text(data.data.gametype);
-                $(".match_rules_lives_per_spawn").text(data.data.lives_per_spawn);
-                $(".match_rules_length").text(data.data.match_length + " minutes");
-
-                var respawn_timer_text = data.data.respawn_timer + " seconds";
-                if (data.data.respawn_timer == -1) {
-                    respawn_timer_text = "disabled";
-                }
-                $(".match_rules_respawn_timer").text(respawn_timer_text);
-                var scores_htmlz = "";
-                for (var i=0; i<data.data.players.length; i++) {
-                    if (data.data.players[i]['player_id'] == localStorage.getItem("player_id")) {
-                        scores_htmlz += '<tr bgcolor="#add8e6">';
+                    //Navbar updates
+                    if (data.data.creator_player_id == localStorage.getItem("player_id")) {
+                        $(".end_match_action").removeClass('hide-me');
                     }
                     else {
-                        scores_htmlz += '<tr>';
+                        $(".end_match_action").addClass('hide-me');
                     }
-                    scores_htmlz += '<th scope="row">'+(i+1)+'</th><td>'+data.data.players[i]['alias']+'</td><td>'+data.data.players[i]['score']+'</td></tr>';
-                }
-                $("#match_in_progress_scores").html(scores_htmlz);
-                var countdown_seconds_left = data.data.match_countdown - data.data.match_seconds_elapsed;
-                $("#match_begins_timer").text(countdown_seconds_left);
-                if (data.data.match_seconds_left > 0) {
-                    var match_time_left_seconds = (data.data.match_seconds_left % 60).toString();
-                    if (match_time_left_seconds.length == 1) {
-                        match_time_left_seconds = "0" + match_time_left_seconds;
-                    }
-                    var match_time_left_minutes = (Math.floor(data.data.match_seconds_left / 60)).toString();
-                    $(".match_time_left").text(match_time_left_minutes + ":" + match_time_left_seconds);
-                }
-                else {
-                    $(".match_time_left").text("Game Over!");
-                }
-                if (countdown_seconds_left > 0) {
-                    if ($('#match_about_to_start').hasClass('hide-me')) {
-                        $(".full_page").addClass('hide-me');
-                        $("#match_about_to_start").removeClass('hide-me');
-                    }
-                    poll_match_delay = 800;
-                }
-                else {
-                    if ($('#match_in_progress').hasClass('hide-me')) {
-                        $(".full_page").addClass('hide-me');
-                        $("#match_in_progress").removeClass('hide-me');
-                    }
-                }
-            }
-            else {
-                //Navbar updates
-                $(".end_match_action").addClass('hide-me');
-                $(".receive_fake_hit_action").addClass('hide-me');
-                $(".send_fake_shot_action").addClass('hide-me');
-                cleanup_navbar();
-                //End navbar updates
-            }
+                    $(".receive_fake_hit_action").removeClass('hide-me');
+                    $(".send_fake_shot_action").removeClass('hide-me');
+                    cleanup_navbar();
+                    //End navbar updates
 
-            if (localStorage.getItem("room_code")) {
-                clearTimeout(poll_match_settimeout);
-                poll_match_settimeout = setTimeout("poll_match()", poll_match_delay);
+                    $(".match_in_progress_gametype").text(data.data.gametype);
+                    $(".match_rules_lives_per_spawn").text(data.data.lives_per_spawn);
+                    $(".match_rules_length").text(data.data.match_length + " minutes");
+
+                    var respawn_timer_text = data.data.respawn_timer + " seconds";
+                    if (data.data.respawn_timer == -1) {
+                        respawn_timer_text = "disabled";
+                    }
+                    $(".match_rules_respawn_timer").text(respawn_timer_text);
+                    var scores_htmlz = "";
+                    for (var i=0; i<data.data.players.length; i++) {
+                        if (data.data.players[i]['player_id'] == localStorage.getItem("player_id")) {
+                            scores_htmlz += '<tr bgcolor="#add8e6">';
+                        }
+                        else {
+                            scores_htmlz += '<tr>';
+                        }
+                        scores_htmlz += '<th scope="row">'+(i+1)+'</th><td>'+data.data.players[i]['alias']+'</td><td>'+data.data.players[i]['score']+'</td></tr>';
+                    }
+                    $("#match_in_progress_scores").html(scores_htmlz);
+                    var countdown_seconds_left = data.data.match_countdown - data.data.match_seconds_elapsed;
+                    $("#match_begins_timer").text(countdown_seconds_left);
+                    if (data.data.match_seconds_left > 0) {
+                        var match_time_left_seconds = (data.data.match_seconds_left % 60).toString();
+                        if (match_time_left_seconds.length == 1) {
+                            match_time_left_seconds = "0" + match_time_left_seconds;
+                        }
+                        var match_time_left_minutes = (Math.floor(data.data.match_seconds_left / 60)).toString();
+                        $(".match_time_left").text(match_time_left_minutes + ":" + match_time_left_seconds);
+                    }
+                    else {
+                        $(".match_time_left").text("Game Over!");
+                    }
+                    if (countdown_seconds_left > 0) {
+                        if ($('#match_about_to_start').hasClass('hide-me')) {
+                            $(".full_page").addClass('hide-me');
+                            $("#match_about_to_start").removeClass('hide-me');
+                        }
+                        poll_match_delay = 800;
+                    }
+                    else {
+                        if ($('#match_in_progress').hasClass('hide-me')) {
+                            $(".full_page").addClass('hide-me');
+                            $("#match_in_progress").removeClass('hide-me');
+                        }
+                    }
+                }
+                else {
+                    //Navbar updates
+                    $(".end_match_action").addClass('hide-me');
+                    $(".receive_fake_hit_action").addClass('hide-me');
+                    $(".send_fake_shot_action").addClass('hide-me');
+                    cleanup_navbar();
+                    //End navbar updates
+                }
+
+                if (localStorage.getItem("room_code")) {
+                    clearTimeout(poll_match_settimeout);
+                    poll_match_settimeout = setTimeout("poll_match()", poll_match_delay);
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 function start_match() {
@@ -161,6 +165,9 @@ function start_match() {
     }
     if (!parseInt(post_data['match_length'])) {
         post_data['match_length'] = 15;
+    }
+    if (!parseInt(post_data['respawn_timer'])) {
+        post_data['match_length'] = 5;
     }
     jQuery.ajax({
         url: "http://127.0.0.1:8001/start_match",
