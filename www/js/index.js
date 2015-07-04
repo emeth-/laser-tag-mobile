@@ -3,11 +3,15 @@ if (!localStorage.getItem("player_id")){
     localStorage.setItem("player_id", makeid());
 }
 var poll_match_settimeout;
+var hits_received = [];
+var shot_locations = ["chest", "shoulder", "back"];
+var other_players_in_room = [];
 
 function leave_room() {
     clearTimeout(poll_match_settimeout);
     $("#mainnavbar_button").click();
     localStorage.removeItem("room_id");
+    other_players_in_room = [];
 
     $(".leave_room_action").addClass('hide-me');
     $(".receive_fake_hit_action").addClass('hide-me');
@@ -23,8 +27,15 @@ function end_match() {
 
 }
 
-function receive_fake_hit() {
+var rand = myArray[Math.floor(Math.random() * myArray.length)];
 
+function receive_fake_hit() {
+    var new_hit = {
+        "player_id": other_players_in_room[Math.floor(Math.random() * other_players_in_room.length)],
+        "time": Math.floor(new Date().getTime()/1000),
+        "shot_location": shot_locations[Math.floor(Math.random() * shot_locations.length)]
+    };
+    hits_received.push(new_hit)
 }
 
 function send_fake_shot() {
@@ -94,6 +105,7 @@ function poll_match() {
                             scores_htmlz += '<tr bgcolor="#add8e6">';
                         }
                         else {
+                            other_players_in_room.push(data.data.players[i]['player_id']);
                             scores_htmlz += '<tr>';
                         }
                         scores_htmlz += '<th scope="row">'+(i+1)+'</th><td>'+data.data.players[i]['alias']+'</td><td>'+data.data.players[i]['score']+'</td></tr>';
@@ -167,7 +179,7 @@ function start_match() {
         post_data['match_length'] = 15;
     }
     if (!parseInt(post_data['respawn_timer'])) {
-        post_data['match_length'] = 5;
+        post_data['respawn_timer'] = 5;
     }
     jQuery.ajax({
         url: "http://127.0.0.1:8001/start_match",
