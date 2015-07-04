@@ -3,15 +3,30 @@ if (!localStorage.getItem("player_id")){
     localStorage.setItem("player_id", makeid());
 }
 var poll_match_settimeout;
-var hits_received = [];
 var shot_locations = ["chest", "shoulder", "back"];
-var other_players_in_room = [];
+var hits_received;
+var other_players_in_room;
+var player_lives;
+var match_lives;
+var match_respawn_timer;
+var player_respawn_timer;
+
+function reset_room() {
+    localStorage.removeItem("room_id");
+    other_players_in_room = [];
+    player_lives = -1;
+    hits_received = {};
+    match_lives = 0;
+    match_respawn_timer = 0;
+    player_respawn_timer = -1;
+}
+
+reset_room();
 
 function leave_room() {
     clearTimeout(poll_match_settimeout);
     $("#mainnavbar_button").click();
-    localStorage.removeItem("room_id");
-    other_players_in_room = [];
+    reset_room();
 
     $(".leave_room_action").addClass('hide-me');
     $(".receive_fake_hit_action").addClass('hide-me');
@@ -27,15 +42,49 @@ function end_match() {
 
 }
 
-var rand = myArray[Math.floor(Math.random() * myArray.length)];
-
-function receive_fake_hit() {
-    var new_hit = {
+function process_hit() {
+    hits_received[makeid()] = {
         "player_id": other_players_in_room[Math.floor(Math.random() * other_players_in_room.length)],
         "time": Math.floor(new Date().getTime()/1000),
         "shot_location": shot_locations[Math.floor(Math.random() * shot_locations.length)]
     };
-    hits_received.push(new_hit)
+    if (player_lives > 0) {
+        player_lives = player_lives - 1;
+        $("#player_lives").text(player_lives);
+    }
+    if (player_lives == 0) {
+        $("#player_status").html("DEAD");
+    }
+    if (match_respawn_timer > 0 && player_lives == 0) {
+        trigger_player_respawn_timer();
+    }
+}
+
+function trigger_player_respawn_timer() {
+    if (match_respawn_timer > 0 && player_lives == 0) {
+        if (player_respawn_timer == -1) {
+            //haven't started respawn yet
+            player_respawn_timer = match_respawn_timer;
+            $("#player_status").html("DEAD <br>"+player_respawn_timer+" seconds");
+            setTimeout("trigger_player_respawn_timer()", 1000);
+        } else if (player_respawn_timer <= 1) { //1 or 0
+            //respawn player
+            player_lives = match_lives;
+            $("#player_lives").text(player_lives);
+            player_respawn_timer = -1;
+            $("#player_status").html("Alive<br>&nbsp;");
+        } else {
+            //respawn ticking down
+            player_respawn_timer = player_respawn_timer - 1;
+            $("#player_status").html("DEAD <br>"+player_respawn_timer+" seconds");
+            setTimeout("trigger_player_respawn_timer()", 1000);
+        }
+    }
+}
+
+function receive_fake_hit() {
+    process_hit();
+    $("#mainnavbar_button").click();
 }
 
 function send_fake_shot() {
@@ -62,7 +111,8 @@ function poll_match() {
             type: "POST",
             data: {
                 player_id: localStorage.getItem("player_id"),
-                room_code: localStorage.getItem("room_code")
+                room_code: localStorage.getItem("room_code"),
+                hits_received: JSON.stringify(hits_received)
             },
             error: function (e) {
                 if (e.responseJSON && e.responseJSON.message) {
@@ -76,6 +126,14 @@ function poll_match() {
             success:function (data) {
                 $(".waiting_for_match_num_players").text(data.data.number_of_players);
                 var poll_match_delay = 3000;
+
+                if (data.data.received_hit_ids) {
+                    console.log("data.data.received_hit_ids", data.data.received_hit_ids);
+                    for (var i=0; i<data.data.received_hit_ids.length; i++) {
+                        delete hits_received[data.data.received_hit_ids[i]];
+                    }
+                }
+
                 if (data.data.match_in_progress) {
 
                     //Navbar updates
@@ -90,26 +148,38 @@ function poll_match() {
                     cleanup_navbar();
                     //End navbar updates
 
+                    if (player_lives == -1) {
+                        //beginning of match, set player to default lives
+                        player_lives = parseInt(data.data.lives_per_spawn);
+                        $("#player_lives").text(player_lives);
+                    }
+
                     $(".match_in_progress_gametype").text(data.data.gametype);
                     $(".match_rules_lives_per_spawn").text(data.data.lives_per_spawn);
                     $(".match_rules_length").text(data.data.match_length + " minutes");
 
+                    match_lives = data.data.lives_per_spawn;
+
+                    match_respawn_timer = data.data.respawn_timer;
                     var respawn_timer_text = data.data.respawn_timer + " seconds";
                     if (data.data.respawn_timer == -1) {
                         respawn_timer_text = "disabled";
                     }
                     $(".match_rules_respawn_timer").text(respawn_timer_text);
                     var scores_htmlz = "";
+                    var players_ids = [];
                     for (var i=0; i<data.data.players.length; i++) {
+                        players_ids.push(data.data.players[i]['player_id']);
                         if (data.data.players[i]['player_id'] == localStorage.getItem("player_id")) {
+                            $("#player_score").text(data.data.players[i]['score']);
                             scores_htmlz += '<tr bgcolor="#add8e6">';
                         }
                         else {
-                            other_players_in_room.push(data.data.players[i]['player_id']);
                             scores_htmlz += '<tr>';
                         }
                         scores_htmlz += '<th scope="row">'+(i+1)+'</th><td>'+data.data.players[i]['alias']+'</td><td>'+data.data.players[i]['score']+'</td></tr>';
                     }
+                    other_players_in_room = players_ids;
                     $("#match_in_progress_scores").html(scores_htmlz);
                     var countdown_seconds_left = data.data.match_countdown - data.data.match_seconds_elapsed;
                     $("#match_begins_timer").text(countdown_seconds_left);

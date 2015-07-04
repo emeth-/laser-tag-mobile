@@ -158,6 +158,7 @@
                         <li class="list-group-item">Lives per Spawn: <span class="match_rules_lives_per_spawn"></span></li>
                         <li class="list-group-item">Respawn Timer: <span class="match_rules_respawn_timer"></span></li>
                         <li class="list-group-item">Match Length: <span class="match_rules_length"></span></li>
+                        <li class="list-group-item">Score: <br>+1 for Chest <br>+2 for Shoulder <br>+3 for Back</li>
                     </ul>
                 </div>
 
@@ -194,14 +195,14 @@
                       <div class="container" style="padding:0 !important;">
                         <div class="btn-group btn-group-justified" role="group" aria-label="...">
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-default">Score:<br>12,302</button>
+                                <button type="button" class="btn btn-default">Score:<br><span id="player_score">123</span></button>
                             </div>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-default">Lives:<br>10</button>
+                                <button type="button" class="btn btn-default">Lives:<br><span id="player_lives">10</span></button>
                             </div>
                             <div class="btn-group" role="group">
                                 <!--<button type="button" class="btn btn-default">Alive<br>&nbsp;</button>-->
-                                <button type="button" class="btn btn-default">Respawn:<br>10 seconds</button>
+                                <button type="button" class="btn btn-default"><span id="player_status">Alive<br>&nbsp;</span></button>
                             </div>
                         </div>
                       </div>
