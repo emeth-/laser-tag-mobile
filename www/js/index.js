@@ -376,10 +376,12 @@ function connect_bluetooth() {
 }
 
 function update_bluetooth_device_list(devices) {
+    console.log("updating bluetooth device list", devices);
     var htmlz = "";
     devices.forEach(function(device) {
-        htmlz += '<button type="button" class="list-group-item" data-device-address="'+device.address+'" onclick="bluetoothSerial.connect("'+device.address+'", connect_bluetooth, generalError);">'+device.name+' ('+device.address+')</button>';
+        htmlz += '<button type="button" class="list-group-item" onclick="bluetoothSerial.connect(\''+device.address+'\', connect_bluetooth, generalError);">'+device.name+' ('+device.address+')</button>';
     });
+    console.log(htmlz);
     $("#bluetooth_device_list").html(htmlz);
 }
 
@@ -412,6 +414,6 @@ var app = {
 
     onDeviceReady: function() {
         console.log("Device is now ready");
-        bluetoothSerial.list(onDeviceList, generalError);
+        bluetoothSerial.list(update_bluetooth_device_list, generalError);
     },
 };
