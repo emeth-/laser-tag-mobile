@@ -354,6 +354,39 @@ function join_existing_room_submit() {
     }
 }
 
+function receive_bluetooth_data(data) {
+    console.log("RECEIVED BLUETOOTH DATA:", data);
+}
+
+function send_bluetooth_data(data) {
+    var success = function() {
+        console.log("Sent bluetooth data:", data);
+    };
+
+    var failure = function() {
+        console.log("Failure attempting to send bluetooth data:", data);
+    };
+
+    bluetoothSerial.write(data, success, failure);
+}
+
+function connect_bluetooth() {
+    bluetoothSerial.subscribe('\n', receive_bluetooth_data, generalError);
+    console.log("Connecting to bluetooth device");
+}
+
+function update_bluetooth_device_list(devices) {
+    var htmlz = "";
+    devices.forEach(function(device) {
+        htmlz += '<button type="button" class="list-group-item" data-device-address="'+device.address+'" onclick="bluetoothSerial.connect("'+device.address+'", connect_bluetooth, generalError);">'+device.name+' ('+device.address+')</button>';
+    });
+    $("#bluetooth_device_list").html(htmlz);
+}
+
+function generalError(reason) {
+    alert("ERROR: " + reason);
+}
+
 function makeid()
 {
     var text = "";
@@ -370,29 +403,15 @@ var app = {
     initialize: function() {
         this.bindEvents();
     },
-    // Bind Event Listeners
-    //
+
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
+
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
+        console.log("Device is now ready");
+        bluetoothSerial.list(onDeviceList, generalError);
     },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    }
 };
